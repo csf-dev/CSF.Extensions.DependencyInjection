@@ -26,7 +26,7 @@ namespace CSF.Extensions.DependencyInjection
         public void AddLazyServiceDescriptorShouldNotAddAnAdditionalServiceDescriptorIfTheServiceTypeAlreadyHasALazyDescriptor(LazyServicesExtender sut, [NoAutoProperties] ServiceCollection serviceCollection)
         {
             serviceCollection.AddTransient<MyClass>();
-            serviceCollection.AddTransient<Lazy<MyClass>>(s => new Lazy<MyClass>(() => s.GetRequiredService<MyClass>()));
+            serviceCollection.AddTransient(s => new Lazy<MyClass>(() => s.GetRequiredService<MyClass>()));
             sut.AddLazyServiceDescriptor<MyClass>(serviceCollection, serviceCollection[0]);
 
             Assert.That(serviceCollection, Has.Count.EqualTo(2), "The count of service descriptors should be unchanged");

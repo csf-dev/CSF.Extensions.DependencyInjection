@@ -1,4 +1,4 @@
-namespace CSF.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection
 {
     public enum UnregisteredTypeResolutionBehaviour
     {
