@@ -36,7 +36,5 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </para>
         /// </example>
         public bool AddLazyResolvers { get; set; }
-
-        public UnregisteredTypeResolutionBehaviour UnregisteredTypeResolutionBehaviour { get; set; }
     }
 }
