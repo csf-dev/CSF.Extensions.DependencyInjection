@@ -1,5 +1,5 @@
 using System;
-using CSF.Extensions.DependencyInjection;
+using CSF.Extensions.DependencyInjection.Lazy;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

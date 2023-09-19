@@ -3,12 +3,13 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CSF.Extensions.DependencyInjection
+namespace CSF.Extensions.DependencyInjection.Lazy
 {
     /// <summary>
     /// An object which extends the registrations present within a <see cref="ServiceCollection"/> by adding lazy resolvers for all
     /// registered services.
     /// </summary>
+    /// <seealso cref="ExtendedServiceProviderOptions.AddLazyResolvers"/>
     public class LazyServicesExtender
     {
         static readonly MethodInfo addResolverGeneric = typeof(LazyServicesExtender).GetMethod(nameof(AddLazyServiceDescriptor));

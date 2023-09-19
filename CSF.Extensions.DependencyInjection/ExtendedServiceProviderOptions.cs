@@ -14,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// Using this class of extended options does not preclude using built-in Microsoft-specified options.
     /// </para>
     /// </remarks>
+    /// <seealso cref="CSF.Extensions.DependencyInjection.Lazy.LazyServicesExtender"/>
     public class ExtendedServiceProviderOptions : ServiceProviderOptions
     {
         /// <summary>
@@ -23,6 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <para>
         /// When this option is set to <see langword="true" /> then every service registered within the service collection will
         /// be made available from the service provider as a <see cref="System.Lazy{T}"/> of the same service type.
+        /// When this option is set to <see langword="false" /> then no modification is made to the service collection for the purpose
+        /// of resolving lazy services.
         /// </para>
         /// </remarks>
         /// <example>
