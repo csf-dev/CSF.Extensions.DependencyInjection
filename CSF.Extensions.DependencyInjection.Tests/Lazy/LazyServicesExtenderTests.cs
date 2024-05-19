@@ -4,7 +4,7 @@ using AutoFixture.NUnit3;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace CSF.Extensions.DependencyInjection
+namespace CSF.Extensions.DependencyInjection.Lazy
 {
     [TestFixture,Parallelizable]
     public class LazyServicesExtenderTests
@@ -18,7 +18,20 @@ namespace CSF.Extensions.DependencyInjection
             Assert.Multiple(() =>
             {
                 Assert.That(serviceCollection, Has.One.Matches<ServiceDescriptor>(d => d.ServiceType == typeof(IMyInterface)), "Service for the original interface type is present");
-                Assert.That(serviceCollection, Has.One.Matches<ServiceDescriptor>(d => d.ServiceType == typeof(Lazy<IMyInterface>)), "Service for a lazy of the interface type is present");
+                Assert.That(serviceCollection, Has.One.Matches<ServiceDescriptor>(d => d.ServiceType == typeof(Lazy<IMyInterface>) && !d.IsKeyedService), "Service for a lazy of the interface type is present");
+            });
+        }
+
+        [Test,AutoMoqData]
+        public void AddLazyServiceDescriptorShouldAddAnAdditionalKeyedServiceDescriptorForLazyOfTheServiceType(LazyServicesExtender sut, [NoAutoProperties] ServiceCollection serviceCollection)
+        {
+            serviceCollection.AddKeyedTransient<IMyInterface, MyClass>("foo");
+            sut.AddLazyServiceDescriptor<IMyInterface>(serviceCollection, serviceCollection[0]);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(serviceCollection, Has.One.Matches<ServiceDescriptor>(d => d.ServiceType == typeof(IMyInterface)), "Service for the original interface type is present");
+                Assert.That(serviceCollection, Has.One.Matches<ServiceDescriptor>(d => d.ServiceType == typeof(Lazy<IMyInterface>) && d.IsKeyedService && d.ServiceKey!.Equals("foo")), "Service for a lazy of the interface type is present");
             });
         }
 

@@ -27,6 +27,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// When this option is set to <see langword="false" /> then no modification is made to the service collection for the purpose
         /// of resolving lazy services.
         /// </para>
+        /// <para>
+        /// When lazy resolvers are added, this will also function for keyed services: https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection#keyed-services
+        /// The lazily-resolved equivalents of the services will have the same service keys as their non-lazy counterparts.
+        /// </para>
+        /// <para>
+        /// Resolution scopes are also respected when adding lazy resolvers in this way.  The lazy resolver will have the same
+        /// scope as its non-lazy counterpart.
+        /// </para>
         /// </remarks>
         /// <example>
         /// <para>

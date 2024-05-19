@@ -66,22 +66,57 @@ namespace CSF.Extensions.DependencyInjection.Lazy
             if (descriptor is null)
                 throw new ArgumentNullException(nameof(descriptor));
 
+            if (descriptor.IsKeyedService)
+                AddKeyedLazyServiceDescriptor<T>(serviceCollection, descriptor);
+            else
+                AddNonKeyedLazyServiceDescriptor<T>(serviceCollection, descriptor);
+        }
+
+        static void AddNonKeyedLazyServiceDescriptor<T>(ServiceCollection serviceCollection, ServiceDescriptor descriptor)
+        {
             // Don't do anything if the service collection already contains a lazy registration for this service type
-            if (serviceCollection.Any(x => x.ServiceType == typeof(Lazy<T>))) return;
+            // which is also not keyed.
+            if (serviceCollection.Any(x => x.ServiceType == typeof(Lazy<T>)
+             && !x.IsKeyedService)) return;
 
             switch(descriptor.Lifetime)
             {
             case ServiceLifetime.Scoped:
-                serviceCollection.AddScoped(services => new Lazy<T>(() => services.GetRequiredService<T>()));
+                serviceCollection.AddScoped(ResolveNonKeyed<T>);
                 break;
             case ServiceLifetime.Singleton:
-                serviceCollection.AddSingleton(services => new Lazy<T>(() => services.GetRequiredService<T>()));
+                serviceCollection.AddSingleton(ResolveNonKeyed<T>);
                 break;
             default:
-                serviceCollection.AddTransient(services => new Lazy<T>(() => services.GetRequiredService<T>()));
+                serviceCollection.AddTransient(ResolveNonKeyed<T>);
                 break;
             }
         }
             
+        static void AddKeyedLazyServiceDescriptor<T>(ServiceCollection serviceCollection, ServiceDescriptor descriptor)
+        {
+            // Don't do anything if the service collection already contains a keyed lazy registration for this service type
+            // which has the same key as this descriptor.
+            if (serviceCollection.Any(x => x.ServiceType == typeof(Lazy<T>)
+             && x.IsKeyedService
+             && Equals(x.ServiceKey, descriptor.ServiceKey))) return;
+
+            switch(descriptor.Lifetime)
+            {
+            case ServiceLifetime.Scoped:
+                serviceCollection.AddKeyedScoped(descriptor.ServiceKey, ResolveKeyed<T>);
+                break;
+            case ServiceLifetime.Singleton:
+                serviceCollection.AddKeyedSingleton(descriptor.ServiceKey, ResolveKeyed<T>);
+                break;
+            default:
+                serviceCollection.AddKeyedTransient(descriptor.ServiceKey, ResolveKeyed<T>);
+                break;
+            }
+        }
+
+        static Lazy<T> ResolveNonKeyed<T>(IServiceProvider services) => new Lazy<T>(() => services.GetRequiredService<T>());
+
+        static Lazy<T> ResolveKeyed<T>(IServiceProvider services, object key) => new Lazy<T>(() => services.GetKeyedService<T>(key));
     }
 }
